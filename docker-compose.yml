@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  tromino:
+    build: .
+    image: theblusky/tromino:dev
+    expose:
+     - 8080
+    links:
+     - mongo
+
+  mongo:
+    image: mongo:latest
+    # volumes:
+    # - /my/own/datadir:/data/db

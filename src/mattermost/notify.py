@@ -1,0 +1,41 @@
+import aiohttp
+from exceptions import UnknownNotificationType
+from mattermost import helpers
+from models.parameter import ParameterModel
+
+NOTIFICATION_ERROR = 0
+NOTIFICATION_SUCCESS = 1
+NOTIFICATION_HELP = 2
+NOTIFICATION_RAW = 3
+
+
+async def notify(
+    data, notification_type=NOTIFICATION_SUCCESS, username=None, overwrite_url=False
+):
+    if notification_type == NOTIFICATION_SUCCESS:
+        to_send = helpers.error(data)
+    elif notification_type == NOTIFICATION_SUCCESS:
+        to_send = helpers.success(data)
+    elif notification_type == NOTIFICATION_SUCCESS:
+        to_send = helpers.help(data)
+    elif notification_type == NOTIFICATION_RAW:
+        to_send = data
+    else:
+        raise UnknownNotificationType
+    if username:
+        to_send["username"] = username
+    url = None
+    if overwrite_url:
+        url = overwrite_url
+    else:
+        webhook_url_parameter = await ParameterModel.retrieve("webhook_url")
+        if webhook_url_parameter:
+            url = webhook_url_parameter.value
+    if not url:
+        print(
+            "Unconfigure webhook, please add a slash command and use `/tromino config setup `WEBHOOK URL`"
+        )
+        return
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=to_send) as resp:
+            print(f"Notification sent, response: {resp.status}")
