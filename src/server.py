@@ -22,15 +22,18 @@ async def handle_mattermost(request):
             }
         )
     command = shlex.split(data["text"])
-    print(f"Command received: {command}")
     info = await BaseHandler(command).do_command()
-    return web.Response(**info)
+    return web.json_response(info)
+
+
+async def get_app():
+    app = web.Application()
+    app.add_routes([web.post("/mattermost/", handle_mattermost)])
+    return app
 
 
 async def run_server():
-    app = web.Application()
-    app.add_routes([web.post("/mattermost/", handle_mattermost)])
-    runner = AppRunner(app)
+    runner = AppRunner(await get_app())
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", 8080)
     await site.start()

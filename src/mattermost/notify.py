@@ -38,4 +38,5 @@ async def notify(
         return
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=to_send) as resp:
-            print(f"Notification sent, response: {resp.status}")
+            if resp.status != 200:
+                print(f"Notification sent, but response status code is {resp.status}")

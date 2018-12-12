@@ -40,11 +40,10 @@ class MonitorCreateHandler(AbstractHandler):
         monitor_conf = {
             "name": self.command[0],
             "type": self.command[1],
-            "interval": self.command[2]
+            "interval": self.command[2],
         }
         custom_conf = {
-            a.split("=")[0]: "=".join(a.split("=")[1:])
-            for a in self.command[3:]
+            a.split("=")[0]: "=".join(a.split("=")[1:]) for a in self.command[3:]
         }
         monitor = Monitor.create(monitor_conf, custom_conf)
 

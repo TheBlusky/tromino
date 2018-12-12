@@ -6,6 +6,8 @@ services:
     image: theblusky/tromino:dev
     expose:
      - 8080
+    depends_on:
+     - mongo
     links:
      - mongo
 
