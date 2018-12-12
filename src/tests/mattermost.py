@@ -46,3 +46,16 @@ class MattermostTestCase(AioHTTPTestCase):
             notifications[0]["text"],
             ":fireworks::fireworks::fireworks::fireworks::fireworks:",
         )
+
+    @unittest_run_loop
+    async def test_03_base_help(self):
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f""}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino ["))
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"help"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino ["))

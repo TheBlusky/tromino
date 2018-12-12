@@ -4,10 +4,10 @@ class AbstractHandler:
         self.show_help = show_help
         self.extras = extras
 
-    async def handle_help(self):
+    async def handle_help(self):  # pragma: no cover
         raise NotImplemented
 
-    async def handle_command(self):
+    async def handle_command(self):  # pragma: no cover
         raise NotImplemented
 
     async def do_command(self):
