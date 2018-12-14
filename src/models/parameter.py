@@ -25,7 +25,6 @@ class ParameterModel:
 
     async def change_value(self, new_value):
         collection = Database.get_collection("config")
-        print(new_value)
         await collection.update_one(
             {"param_name": self.param_name}, {"$set": {"value": new_value}}
         )

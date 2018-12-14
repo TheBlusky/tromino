@@ -1,4 +1,6 @@
 import aiohttp
+import logging
+
 from exceptions import UnknownNotificationType
 from mattermost import helpers
 from models.parameter import ParameterModel
@@ -32,11 +34,13 @@ async def notify(
         if webhook_url_parameter:
             url = webhook_url_parameter.value
     if not url:
-        print(
+        logging.warning(
             "Unconfigure webhook, please add a slash command and use `/tromino config setup `WEBHOOK URL`"
         )
         return
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=to_send) as resp:
             if resp.status != 200:
-                print(f"Notification sent, but response status code is {resp.status}")
+                logging.warning(
+                    f"Notification sent, but response status code is {resp.status}"
+                )

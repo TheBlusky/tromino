@@ -1,3 +1,4 @@
+import logging
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, TestServer
 import server
@@ -6,6 +7,9 @@ from tests.fake_mattermost_server import Notifications
 
 
 class MattermostTestCase(AioHTTPTestCase):
+    async def setUpAsync(self):
+        logging.basicConfig(level=logging.ERROR)
+
     async def get_server(self, app):
         return TestServer(app, scheme="http", host="127.0.0.1", port=8080)
 
@@ -59,3 +63,77 @@ class MattermostTestCase(AioHTTPTestCase):
         )
         self.assertEqual(resp.status, 200)
         self.assertTrue((await resp.json())["text"].startswith("`/tromino ["))
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"do_not_exist"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("Unknown command"))
+
+    @unittest_run_loop
+    async def test_04_config(self):
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"config"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino config ["))
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"help config"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino config ["))
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"config do_not_exist"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("Unknown command"))
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"config setup"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertEqual(
+            (await resp.json())["text"], "Error, need an incomming webhook url"
+        )
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"help config setup"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith("`/tromino config setup [")
+        )
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"config setup k://NOT_AN_URL"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("something went wrong:"))
+
+        Notifications.read_notifications()  # flush
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={
+                "command": "/tromino",
+                "text": f"config setup http://127.0.0.1:8080/notify/",
+            },
+        )
+        self.assertEqual(resp.status, 200)
+        resp_json = await resp.json()
+        self.assertEqual(
+            resp_json["text"],
+            "Tromino just launched some fireworks. If you did see it, it means everything is correctly configured",
+        )
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 1)
+        self.assertEqual(
+            notifications[0]["text"],
+            ":fireworks::fireworks::fireworks::fireworks::fireworks:",
+        )

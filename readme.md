@@ -27,3 +27,19 @@ Everything is performed on Mattermost :
 - Use the following command: `/tromino config setup [INCOMING WEBHOOK URL]`
 
 And that's it ! You can use `/tromino help` to see all the commands.
+
+### Development / Testing
+
+You can set your own development environment, either for adding some feature, or simply to run tests.
+
+In order to do it, simple use the following command:
+
+```
+docker-compose build
+./run_tests.sh # Linux / Darwin
+run_tests.bat # Windows
+```
+
+You don't need to re-build the project to run tests when modifying source code, as `run_tests` script mount
+the `./src/` directory directly into the container in order to have up-to-date source code. However, if you
+change `requirements.txt`, you will need to rebuild the image in order to have dependencies installed.

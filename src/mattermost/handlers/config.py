@@ -1,3 +1,5 @@
+import logging
+
 from mattermost import helpers
 from mattermost.handlers.abstract import AbstractHandler
 from mattermost.notify import notify
@@ -29,6 +31,7 @@ class ConfigSetupHandler(AbstractHandler):
         if len(self.command) != 1:
             return helpers.error(f"Error, need an incomming webhook url")
         webhook_url = self.command[0]
+        await ParameterModel.retrieve("webhook_url")
         try:
             await notify(
                 ":fireworks::fireworks::fireworks::fireworks::fireworks:",
@@ -39,10 +42,10 @@ class ConfigSetupHandler(AbstractHandler):
         old_webhook_url = await ParameterModel.retrieve("webhook_url")
         if old_webhook_url:
             await old_webhook_url.change_value(webhook_url)
-            print("WEBHOOK_URL value changed")
+            logging.warning("WEBHOOK_URL value changed")
         else:
             await ParameterModel.create("webhook_url", webhook_url)
-            print("WEBHOOK_URL value created")
+            logging.warning("WEBHOOK_URL value created")
         return helpers.success(
             "Tromino just launched some fireworks. If you did see it, it means everything is correctly configured"
         )
