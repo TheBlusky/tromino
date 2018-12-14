@@ -6,7 +6,7 @@ from monitors.monitor import Monitor
 
 class MonitorHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help(
+        return helpers.info(
             "`/tromino monitor [ type_list | create_monitor | mon-{name} ]`"
         )
 
@@ -30,7 +30,7 @@ class MonitorHandler(AbstractHandler):
 
 class MonitorCreateHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help(
+        return helpers.info(
             "`/tromino monitor create_monitor {name} {type} {interval(s)} [arg1=value1 arg2=value2...}`"
         )
 
@@ -50,7 +50,7 @@ class MonitorCreateHandler(AbstractHandler):
 
 class MonitorDetailsHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help("`/tromino monitor [ type_list | monitors ]`")
+        return helpers.info("`/tromino monitor [ type_list | monitors ]`")
 
     async def handle_command(self):
         if len(self.command) == 0:

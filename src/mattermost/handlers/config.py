@@ -8,7 +8,7 @@ from models.parameter import ParameterModel
 
 class ConfigHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help("`/tromino config [setup]`")
+        return helpers.info("`/tromino config [setup]`")
 
     async def handle_command(self):
         if len(self.command) == 0:
@@ -23,7 +23,7 @@ class ConfigHandler(AbstractHandler):
 
 class ConfigSetupHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help(
+        return helpers.info(
             "`/tromino config setup [MATTERMOST INCOMING WEBHOOK URL]`: Setup tromino for the first time"
         )
 

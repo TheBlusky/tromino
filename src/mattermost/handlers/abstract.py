@@ -1,8 +1,8 @@
 class AbstractHandler:
-    def __init__(self, command, show_help=False, extras={}):
+    def __init__(self, command, show_help=False, extras=None):
         self.command = command
         self.show_help = show_help
-        self.extras = extras
+        self.extras = extras or {}
 
     async def handle_help(self):  # pragma: no cover
         raise NotImplemented

@@ -7,7 +7,7 @@ from mattermost.handlers.status import StatusHandler
 
 class BaseHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.help("`/tromino [status | config | monitoring]`")
+        return helpers.info("`/tromino [status | config | monitoring]`")
 
     async def handle_command(self):
         if len(self.command) == 0:

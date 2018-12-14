@@ -6,5 +6,5 @@ def success(text):
     return {"text": text}
 
 
-def help(text):
+def info(text):
     return {"text": text}

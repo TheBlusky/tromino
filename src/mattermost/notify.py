@@ -19,7 +19,7 @@ async def notify(
     elif notification_type == NOTIFICATION_SUCCESS:
         to_send = helpers.success(data)
     elif notification_type == NOTIFICATION_SUCCESS:
-        to_send = helpers.help(data)
+        to_send = helpers.info(data)
     elif notification_type == NOTIFICATION_RAW:
         to_send = data
     else:

@@ -10,7 +10,7 @@ class ParameterModel:
         if document is not None:
             raise ParameterAlreadyExists()
         document_data = {"param_name": param_name, "value": value}
-        document = await collection.insert_one(document_data)
+        await collection.insert_one(document_data)
         return ParameterModel(document_data)
 
     @classmethod
