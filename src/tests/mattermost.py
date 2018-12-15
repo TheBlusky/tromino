@@ -137,3 +137,26 @@ class MattermostTestCase(AioHTTPTestCase):
             notifications[0]["text"],
             ":fireworks::fireworks::fireworks::fireworks::fireworks:",
         )
+
+    @unittest_run_loop
+    async def test_05_monitor(self):
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"help monitor"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor ["))
+
+    @unittest_run_loop
+    async def test_06_status(self):
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"help status"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino status"))
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"status"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertEqual((await resp.json())["text"], "Status: ok")
