@@ -143,6 +143,16 @@ class MattermostTestCase(AioHTTPTestCase):
         resp = await self.client.request(
             "POST",
             "/mattermost/",
+            data={"command": "/tromino", "text": f"help monitor TOTOTOTO"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith("Unknown command: TOTOTOTO")
+        )
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
             data={"command": "/tromino", "text": f"help monitor"},
         )
         self.assertEqual(resp.status, 200)
@@ -171,6 +181,24 @@ class MattermostTestCase(AioHTTPTestCase):
         )
         self.assertEqual(resp.status, 200)
         self.assertTrue((await resp.json())["text"].startswith("Monitors types:"))
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"help monitor create_monitor"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
+        )
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"help monitor mon-XXX"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor"))
 
     @unittest_run_loop
     async def test_06_status(self):
