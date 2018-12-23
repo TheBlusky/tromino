@@ -7,15 +7,16 @@ from monitors.monitor import Monitor
 class MonitorHandler(AbstractHandler):
     async def handle_help(self):
         return helpers.info(
-            "`/tromino monitor [ type_list | create_monitor | mon-{name} ]`"
+            "`/tromino monitor [ types_list | create_monitor | mon-{name} ]`"
         )
 
     async def handle_command(self):
         if len(self.command) == 0:
             return await self.handle_help()
-        elif self.command[0] == "type_list":
-            m_list = "\n".join([f"- {m}" for m in all_monitors])
-            return helpers.error(f"Monitors type:\n{m_list}")
+        elif self.command[0] == "types_list":
+            return await MonitorTypesListHandler(
+                self.command[1:], show_help=self.show_help
+            ).do_command()
         elif self.command[0] == "create_monitor":
             return await MonitorCreateHandler(
                 self.command[1:], show_help=self.show_help
@@ -26,6 +27,17 @@ class MonitorHandler(AbstractHandler):
             ).do_command()
         else:
             return helpers.error(f"Unknown command: {self.command[0]}")
+
+
+class MonitorTypesListHandler(AbstractHandler):
+    async def handle_help(self):
+        return helpers.info(
+            "`/tromino monitor types_list` : Give all monitors plugins installed."
+        )
+
+    async def handle_command(self):
+        m_list = "\n".join([f"- {m}" for m in all_monitors])
+        return helpers.error(f"Monitors types:\n{m_list}")
 
 
 class MonitorCreateHandler(AbstractHandler):

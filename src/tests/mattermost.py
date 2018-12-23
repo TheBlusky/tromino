@@ -148,6 +148,30 @@ class MattermostTestCase(AioHTTPTestCase):
         self.assertEqual(resp.status, 200)
         self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor ["))
 
+        resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/tromino", "text": f"monitor"}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor ["))
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"help monitor types_list"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith("`/tromino monitor types_list")
+        )
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor types_list"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("Monitors types:"))
+
     @unittest_run_loop
     async def test_06_status(self):
         resp = await self.client.request(
