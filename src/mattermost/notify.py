@@ -14,11 +14,11 @@ NOTIFICATION_RAW = 3
 async def notify(
     data, notification_type=NOTIFICATION_SUCCESS, username=None, overwrite_url=False
 ):
-    if notification_type == NOTIFICATION_SUCCESS:
+    if notification_type == NOTIFICATION_ERROR:
         to_send = helpers.error(data)
     elif notification_type == NOTIFICATION_SUCCESS:
         to_send = helpers.success(data)
-    elif notification_type == NOTIFICATION_SUCCESS:
+    elif notification_type == NOTIFICATION_HELP:
         to_send = helpers.info(data)
     elif notification_type == NOTIFICATION_RAW:
         to_send = data
@@ -27,7 +27,7 @@ async def notify(
     if username:
         to_send["username"] = username
     url = None
-    if overwrite_url:
+    if overwrite_url is not False:
         url = overwrite_url
     else:
         webhook_url_parameter = await ParameterModel.retrieve("webhook_url")
@@ -40,7 +40,7 @@ async def notify(
         return
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
         async with session.post(url, json=to_send) as resp:
-            if resp.status != 200:
+            if resp.status != 200:  # pragma: no cover
                 logging.warning(
                     f"Notification sent, but response status code is {resp.status}"
                 )

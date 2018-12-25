@@ -4,6 +4,8 @@ from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, TestServer
 import scheduler
 import server
+import mattermost.notify as notify
+from exceptions import UnknownNotificationType
 from tests import fake_mattermost_server
 from tests.fake_mattermost_server import Notifications
 
@@ -281,3 +283,45 @@ class MattermostTestCase(AioHTTPTestCase):
         )
         self.assertEqual(resp.status, 200)
         self.assertEqual((await resp.json())["text"], "Status: ok")
+
+    @unittest_run_loop
+    async def test_10_notify(self):
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        await notify.notify("Toto", notification_type=notify.NOTIFICATION_ERROR)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 1)
+
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        await notify.notify("Toto", notification_type=notify.NOTIFICATION_SUCCESS)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 1)
+
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        await notify.notify("Toto", notification_type=notify.NOTIFICATION_HELP)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 1)
+
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        await notify.notify({"text": "Toto"}, notification_type=notify.NOTIFICATION_RAW)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 1)
+
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        try:
+            await notify.notify({"text": "Toto"}, notification_type=-12)
+            self.assertTrue(False)
+        except UnknownNotificationType:
+            pass
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
+        await notify.notify("Toto", overwrite_url=None)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
