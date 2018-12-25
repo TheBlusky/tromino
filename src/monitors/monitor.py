@@ -9,7 +9,7 @@ from exceptions import (
 from mattermost.notify import notify, NOTIFICATION_SUCCESS
 from models.monitor import MonitorModel
 from monitors.implems import all_monitors
-from scheduler import scheduler
+import scheduler
 
 
 class Monitor:
@@ -79,7 +79,7 @@ class Monitor:
             raise JobAlreadyStarted
         interval = (await self.get_monitor_conf())["interval"]
         print("interval", interval)
-        self.job = scheduler.add_job(self.do_job, "interval", seconds=interval)
+        self.job = scheduler.scheduler.add_job(self.do_job, "interval", seconds=interval)
 
     def job_stop(self):
         if not self.job_is_started():
@@ -94,6 +94,7 @@ class Monitor:
         # Todo: log it
         # Todo: try catch
         # Todo: Execution time
+        print("GOOOOOOO")
         old_state = (await self.get_monitor_conf())["state"]
         new_state = await self.refresh()
         await self.compare(old_state, new_state)
