@@ -23,7 +23,7 @@ class MonitorHandler(AbstractHandler):
             ).do_command()
         elif self.command[0].startswith("mon-"):
             return await MonitorDetailsHandler(
-                self.command[1:], show_help=self.show_help
+                [self.command[0][4:]] + self.command[1:], show_help=self.show_help
             ).do_command()
         else:
             return helpers.error(f"Unknown command: {self.command[0]}")
@@ -59,13 +59,22 @@ class MonitorCreateHandler(AbstractHandler):
         }
         monitor = await Monitor.create(monitor_conf, custom_conf)
         await monitor.job_start()
-        return helpers.success(f"Monitor `mon-{self.command[0]}` created")
+        return helpers.success(f"Monitor `{self.command[0]}` created")
 
 
 class MonitorDetailsHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.info("`/tromino monitor mon-{name} [delete | pause | start]`")
+        return helpers.info("`/tromino monitor mon-{name} [remove]`")
 
     async def handle_command(self):
-        if len(self.command) == 0:
+        if self.command[0] not in Monitor.monitor_instances:
+            return helpers.error(f"Unknown monitor: {self.command[0]}")
+        monitor = Monitor.monitor_instances[self.command[0]]
+        if len(self.command) == 1:
             return await self.handle_help()
+        elif self.command[1] == "remove":
+            # monitor stop
+            # monitor remove
+            return helpers.success(f"Monitor `{self.command[0]}` removed")
+        else:
+            return helpers.error(f"Unknown command: {self.command[0]}")

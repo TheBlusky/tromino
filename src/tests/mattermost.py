@@ -219,7 +219,7 @@ class MattermostTestCase(AioHTTPTestCase):
             },
         )
         self.assertEqual(resp.status, 200)
-        self.assertEqual((await resp.json())["text"], "Monitor `mon-dummytest` created")
+        self.assertEqual((await resp.json())["text"], "Monitor `dummytest` created")
 
         await asyncio.sleep(5)
         notifications = Notifications.read_notifications()
@@ -231,10 +231,40 @@ class MattermostTestCase(AioHTTPTestCase):
         resp = await self.client.request(
             "POST",
             "/mattermost/",
-            data={"command": "/tromino", "text": f"help monitor mon-XXX"},
+            data={"command": "/tromino", "text": f"help monitor mon-dummytest"},
         )
         self.assertEqual(resp.status, 200)
         self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor"))
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor mon-XXX"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("Unknown monitor"))
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor mon-dummytest TOTOTO"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("Unknown command: "))
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor mon-dummytest remove"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertEqual((await resp.json())["text"], "Monitor `dummytest` removed")
+
+        await asyncio.sleep(5)  # Wait for alive job to finish
+        Notifications.read_notifications()
+        await asyncio.sleep(5)
+        notifications = Notifications.read_notifications()
+        self.assertEqual(len(notifications), 0)
 
         # Clean scheduler
         scheduler.clean_scheduler()
