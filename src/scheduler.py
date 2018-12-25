@@ -15,3 +15,7 @@ def create_scheduler():
 
 
 scheduler = create_scheduler()
+
+
+def clean_scheduler():
+    scheduler.shutdown()

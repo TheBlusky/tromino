@@ -38,7 +38,7 @@ async def notify(
             "Unconfigure webhook, please add a slash command and use `/tromino config setup `WEBHOOK URL`"
         )
         return
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
         async with session.post(url, json=to_send) as resp:
             if resp.status != 200:
                 logging.warning(

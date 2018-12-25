@@ -195,7 +195,7 @@ class MattermostTestCase(AioHTTPTestCase):
         )
 
         # Create scheduler
-        scheduler.scheduler.shutdown()
+        scheduler.clean_scheduler()
         scheduler.scheduler = scheduler.create_scheduler()
         scheduler.scheduler.start()
 
@@ -218,10 +218,6 @@ class MattermostTestCase(AioHTTPTestCase):
         for i in range(1, len(notifications)):
             self.assertTrue(notifications[i]["text"].startswith("Since last refresh"))
 
-        # Clean scheduler
-        scheduler.scheduler.shutdown()
-        await asyncio.sleep(2)
-
         resp = await self.client.request(
             "POST",
             "/mattermost/",
@@ -229,6 +225,9 @@ class MattermostTestCase(AioHTTPTestCase):
         )
         self.assertEqual(resp.status, 200)
         self.assertTrue((await resp.json())["text"].startswith("`/tromino monitor"))
+
+        # Clean scheduler
+        scheduler.clean_scheduler()
 
     @unittest_run_loop
     async def test_06_status(self):

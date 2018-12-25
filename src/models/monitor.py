@@ -81,8 +81,8 @@ class MonitorModel:
             return self.document["state"]
         else:
             await collection.update_one(
-                    {"monitor_conf.name": self.document["monitor_conf"]["name"]},
-                    {"$set": {"state": value}},
+                {"monitor_conf.name": self.document["monitor_conf"]["name"]},
+                {"$set": {"state": value}},
             )
             self.document = await collection.find_one(
                 {"monitor_conf.name": self.document["monitor_conf"]["name"]}
