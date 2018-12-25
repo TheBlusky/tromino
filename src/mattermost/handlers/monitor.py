@@ -73,8 +73,7 @@ class MonitorDetailsHandler(AbstractHandler):
         if len(self.command) == 1:
             return await self.handle_help()
         elif self.command[1] == "remove":
-            # monitor stop
-            # monitor remove
+            await monitor.remove()
             return helpers.success(f"Monitor `{self.command[0]}` removed")
         else:
             return helpers.error(f"Unknown command: {self.command[0]}")

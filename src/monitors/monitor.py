@@ -110,6 +110,23 @@ class Monitor:
             await self.set_state(new_state)
         except CancelledError:
             pass
+        except Exception as e:
+            if self.job is not None:
+                raise e
+            print("Exception on job due to killing it")
+
+    async def remove(self):
+        try:
+            self.job_stop()
+        except JobNotStarted:
+            pass
+        names = []
+        for name in Monitor.monitor_instances:
+            if Monitor.monitor_instances[name] is self:
+                names.append(name)
+        for name in names:
+            del Monitor.monitor_instances[name]
+        await self.model.remove()
 
     # To be implemented in implems
 

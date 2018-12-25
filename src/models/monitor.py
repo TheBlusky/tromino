@@ -87,3 +87,9 @@ class MonitorModel:
             self.document = await collection.find_one(
                 {"monitor_conf.name": self.document["monitor_conf"]["name"]}
             )
+
+    async def remove(self):
+        collection = Database.get_collection("monitors")
+        await collection.delete_many(
+            {"monitor_conf.name": self.document["monitor_conf"]["name"]}
+        )
