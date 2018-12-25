@@ -44,11 +44,14 @@ class MonitorModel:
         if value is None:
             return self.document["custom_conf"]
         else:
-            self.document = await collection.update_one(
+            await collection.update_one(
                 {
                     {"monitor_conf.name": self.document["monitor_conf"]["name"]},
                     {"$set": {"custom_conf": value}},
                 }
+            )
+            self.document = await collection.find_one(
+                {"monitor_conf.name": self.document["monitor_conf"]["name"]}
             )
 
     async def monitor_conf(self, value=None):
@@ -59,11 +62,14 @@ class MonitorModel:
         if value is None:
             return self.document["monitor_conf"]
         else:
-            self.document = await collection.update_one(
+            await collection.update_one(
                 {
                     {"monitor_conf.name": self.document["monitor_conf"]["name"]},
                     {"$set": {"monitor_conf": value}},
                 }
+            )
+            self.document = await collection.find_one(
+                {"monitor_conf.name": self.document["monitor_conf"]["name"]}
             )
 
     async def state(self, value=None):
@@ -74,10 +80,10 @@ class MonitorModel:
         if value is None:
             return self.document["state"]
         else:
-            print(value)
-            self.document = await collection.update_one(
-                {
+            await collection.update_one(
                     {"monitor_conf.name": self.document["monitor_conf"]["name"]},
                     {"$set": {"state": value}},
-                }
+            )
+            self.document = await collection.find_one(
+                {"monitor_conf.name": self.document["monitor_conf"]["name"]}
             )

@@ -2,11 +2,6 @@ import asyncio
 import logging
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, TestServer
-from apscheduler.executors.asyncio import AsyncIOExecutor
-from apscheduler.jobstores.memory import MemoryJobStore
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from pytz import utc
-
 import scheduler
 import server
 from tests import fake_mattermost_server
@@ -199,8 +194,12 @@ class MattermostTestCase(AioHTTPTestCase):
             (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
         )
 
-        scheduler.scheduler = scheduler.new_scheduler()
+        # Create scheduler
+        scheduler.scheduler.shutdown()
+        scheduler.scheduler = scheduler.create_scheduler()
         scheduler.scheduler.start()
+
+        Notifications.read_notifications()
         resp = await self.client.request(
             "POST",
             "/mattermost/",
@@ -212,9 +211,16 @@ class MattermostTestCase(AioHTTPTestCase):
         self.assertEqual(resp.status, 200)
         self.assertEqual((await resp.json())["text"], "Monitor `mon-dummytest` created")
 
-        print("on attend")
         await asyncio.sleep(5)
-        print("on fini")
+        notifications = Notifications.read_notifications()
+        self.assertEqual(notifications[0]["text"], "First compare")
+        self.assertIn(len(notifications), [4, 5, 6])
+        for i in range(1, len(notifications)):
+            self.assertTrue(notifications[i]["text"].startswith("Since last refresh"))
+
+        # Clean scheduler
+        scheduler.scheduler.shutdown()
+        await asyncio.sleep(2)
 
         resp = await self.client.request(
             "POST",

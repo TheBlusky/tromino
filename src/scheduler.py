@@ -4,14 +4,14 @@ from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.executors.asyncio import AsyncIOExecutor
 
 
-def new_scheduler():
-    scheduler = AsyncIOScheduler(
+def create_scheduler():
+    new_scheduler = AsyncIOScheduler(
         jobstores={"default": MemoryJobStore()},
         executors={"default": AsyncIOExecutor()},
         job_defaults={"coalesce": False, "max_instances": 3},
         timezone=utc,
     )
-    return scheduler
+    return new_scheduler
 
 
-scheduler = new_scheduler()
+scheduler = create_scheduler()

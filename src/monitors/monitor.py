@@ -1,3 +1,5 @@
+from asyncio import CancelledError
+
 from exceptions import (
     JobAlreadyStarted,
     JobNotStarted,
@@ -101,10 +103,13 @@ class Monitor:
         # Todo: log it
         # Todo: try catch
         # Todo: Execution time
-        old_state = await self.get_state()
-        new_state = await self.refresh()
-        await self.compare(old_state, new_state)
-        await self.set_state(new_state)
+        try:
+            old_state = await self.get_state()
+            new_state = await self.refresh()
+            await self.compare(old_state, new_state)
+            await self.set_state(new_state)
+        except CancelledError:
+            pass
 
     # To be implemented in implems
 
