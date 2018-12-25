@@ -194,6 +194,16 @@ class MattermostTestCase(AioHTTPTestCase):
             (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
         )
 
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor create_monitor dummytest"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
+        )
+
         # Create scheduler
         scheduler.clean_scheduler()
         scheduler.scheduler = scheduler.create_scheduler()

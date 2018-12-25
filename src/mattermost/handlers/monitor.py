@@ -64,7 +64,7 @@ class MonitorCreateHandler(AbstractHandler):
 
 class MonitorDetailsHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.info("`/tromino monitor [ type_list | monitors ]`")
+        return helpers.info("`/tromino monitor mon-{name} [delete | pause | start]`")
 
     async def handle_command(self):
         if len(self.command) == 0:
