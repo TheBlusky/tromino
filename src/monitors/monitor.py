@@ -20,7 +20,7 @@ class Monitor:
         Monitor.validate_monitor_conf(monitor_conf)
         monitor_class = all_monitors[monitor_conf["type"]]
         monitor_class.validate_custom_conf(custom_conf)
-        model = await MonitorModel.create()
+        model = await MonitorModel.create(monitor_conf, custom_conf)
         monitor = monitor_class(model)
         Monitor.monitor_instances[monitor_conf["name"]] = monitor
         return monitor
@@ -49,7 +49,7 @@ class Monitor:
         self.model.custom_conf(conf)
 
     async def get_monitor_conf(self):
-        return self.model.monitor_conf()
+        return await self.model.monitor_conf()
 
     async def set_monitor_conf(self, conf):
         self.validate_monitor_conf(conf)
@@ -77,9 +77,9 @@ class Monitor:
     async def job_start(self):
         if self.job_is_started():
             raise JobAlreadyStarted
-        self.job = scheduler.add_job(
-            self.do_job, "interval", seconds=(await self.get_monitor_conf())["interval"]
-        )
+        interval = (await self.get_monitor_conf())["interval"]
+        print("interval", interval)
+        self.job = scheduler.add_job(self.do_job, "interval", seconds=interval)
 
     def job_stop(self):
         if not self.job_is_started():

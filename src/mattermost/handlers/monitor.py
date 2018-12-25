@@ -43,7 +43,7 @@ class MonitorTypesListHandler(AbstractHandler):
 class MonitorCreateHandler(AbstractHandler):
     async def handle_help(self):
         return helpers.info(
-            "`/tromino monitor create_monitor {name} {type} {interval(s)} [arg1=value1 arg2=value2...}`"
+            "`/tromino monitor create_monitor {name} {type} {interval] [arg1=value1 arg2=value2...}`"
         )
 
     async def handle_command(self):
@@ -52,12 +52,14 @@ class MonitorCreateHandler(AbstractHandler):
         monitor_conf = {
             "name": self.command[0],
             "type": self.command[1],
-            "interval": self.command[2],
+            "interval": int(self.command[2]),
         }
         custom_conf = {
             a.split("=")[0]: "=".join(a.split("=")[1:]) for a in self.command[3:]
         }
-        monitor = Monitor.create(monitor_conf, custom_conf)
+        monitor = await Monitor.create(monitor_conf, custom_conf)
+        await monitor.job_start()
+        return helpers.success(f"Monitor `mon-{self.command[0]}` created")
 
 
 class MonitorDetailsHandler(AbstractHandler):

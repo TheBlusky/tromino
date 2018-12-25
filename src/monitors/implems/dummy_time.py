@@ -12,6 +12,7 @@ class DummyTimeMonitor(Monitor):
     def compare(self, old_state, new_state):
         old_time = datetime.strptime(old_state, "%Y-%m-%d %H:%M:%S.%f")
         new_time = datetime.strptime(new_state, "%Y-%m-%d %H:%M:%S.%f")
+        print(1)
         self.notify(
             f"Since last refresh, {(new_time - old_time).seconds} seconds has passed."
         )

@@ -1,6 +1,9 @@
+import asyncio
 import logging
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, TestServer
+
+from scheduler import scheduler
 import server
 from tests import fake_mattermost_server
 from tests.fake_mattermost_server import Notifications
@@ -191,6 +194,22 @@ class MattermostTestCase(AioHTTPTestCase):
         self.assertTrue(
             (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
         )
+
+        scheduler.start()
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={
+                "command": "/tromino",
+                "text": f"monitor create_monitor dummytest dummytime 1",
+            },
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertEqual((await resp.json())["text"], "Monitor `mon-dummytest` created")
+
+        print("on attend")
+        await asyncio.sleep(5)
+        print("on fini")
 
         resp = await self.client.request(
             "POST",
