@@ -44,22 +44,22 @@ class Monitor:
     def get_custom_conf(self):
         return self.model.custom_conf()
 
-    def set_custom_conf(self, conf):
+    async def set_custom_conf(self, conf):
         self.validate_custom_conf(conf)
-        self.model.custom_conf(conf)
+        await self.model.custom_conf(conf)
 
     async def get_monitor_conf(self):
         return await self.model.monitor_conf()
 
     async def set_monitor_conf(self, conf):
         self.validate_monitor_conf(conf)
-        self.model.monitor_conf(conf)
+        await self.model.monitor_conf(conf)
 
     async def get_state(self):
         return await self.model.state()
 
     async def set_state(self, state):
-        self.model.state(state)
+        await self.model.state(state)
 
     @classmethod
     def validate_monitor_conf(cls, conf):
@@ -84,7 +84,6 @@ class Monitor:
         if self.job_is_started():
             raise JobAlreadyStarted
         interval = (await self.get_monitor_conf())["interval"]
-        print("interval", interval)
         self.job = scheduler.scheduler.add_job(
             self.do_job, "interval", seconds=interval
         )
@@ -102,7 +101,6 @@ class Monitor:
         # Todo: log it
         # Todo: try catch
         # Todo: Execution time
-        print("GOOOOOOO")
         old_state = await self.get_state()
         new_state = await self.refresh()
         await self.compare(old_state, new_state)

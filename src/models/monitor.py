@@ -74,6 +74,7 @@ class MonitorModel:
         if value is None:
             return self.document["state"]
         else:
+            print(value)
             self.document = await collection.update_one(
                 {
                     {"monitor_conf.name": self.document["monitor_conf"]["name"]},

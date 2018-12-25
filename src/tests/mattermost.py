@@ -199,14 +199,8 @@ class MattermostTestCase(AioHTTPTestCase):
             (await resp.json())["text"].startswith("`/tromino monitor create_monitor")
         )
 
-        async def dummy():
-            print("a")
-            await asyncio.sleep(1)
-            print("b")
-
         scheduler.scheduler = scheduler.new_scheduler()
         scheduler.scheduler.start()
-        scheduler.scheduler.add_job(dummy, "interval", seconds=2)
         resp = await self.client.request(
             "POST",
             "/mattermost/",
@@ -219,7 +213,7 @@ class MattermostTestCase(AioHTTPTestCase):
         self.assertEqual((await resp.json())["text"], "Monitor `mon-dummytest` created")
 
         print("on attend")
-        await asyncio.sleep(20)
+        await asyncio.sleep(5)
         print("on fini")
 
         resp = await self.client.request(
