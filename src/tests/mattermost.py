@@ -6,6 +6,8 @@ import scheduler
 import server
 import mattermost.notify as notify
 from exceptions import UnknownNotificationType
+from models.monitor import MonitorModel
+from models.parameter import ParameterModel
 from tests import fake_mattermost_server
 from tests.fake_mattermost_server import Notifications
 
@@ -21,6 +23,11 @@ class MattermostTestCase(AioHTTPTestCase):
         app = await server.get_app()
         app.add_routes([web.post("/notify/", fake_mattermost_server.handle_notify)])
         return app
+
+    @unittest_run_loop
+    async def test_00_flush(self):
+        await ParameterModel.flush()
+        await MonitorModel.flush()
 
     @unittest_run_loop
     async def test_01_routes(self):

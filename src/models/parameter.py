@@ -29,3 +29,8 @@ class ParameterModel:
             {"param_name": self.param_name}, {"$set": {"value": new_value}}
         )
         self.value = new_value
+
+    @classmethod
+    async def flush(cls):
+        collection = Database.get_collection("config")
+        await collection.delete_many({})

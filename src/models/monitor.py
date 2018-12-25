@@ -93,3 +93,8 @@ class MonitorModel:
         await collection.delete_many(
             {"monitor_conf.name": self.document["monitor_conf"]["name"]}
         )
+
+    @classmethod
+    async def flush(cls):
+        collection = Database.get_collection("monitors")
+        await collection.delete_many({})
