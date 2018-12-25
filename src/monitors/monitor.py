@@ -55,6 +55,12 @@ class Monitor:
         self.validate_monitor_conf(conf)
         self.model.monitor_conf(conf)
 
+    async def get_state(self):
+        return await self.model.state()
+
+    async def set_state(self, state):
+        self.model.state(state)
+
     @classmethod
     def validate_monitor_conf(cls, conf):
         if (
@@ -79,7 +85,9 @@ class Monitor:
             raise JobAlreadyStarted
         interval = (await self.get_monitor_conf())["interval"]
         print("interval", interval)
-        self.job = scheduler.scheduler.add_job(self.do_job, "interval", seconds=interval)
+        self.job = scheduler.scheduler.add_job(
+            self.do_job, "interval", seconds=interval
+        )
 
     def job_stop(self):
         if not self.job_is_started():
@@ -95,17 +103,17 @@ class Monitor:
         # Todo: try catch
         # Todo: Execution time
         print("GOOOOOOO")
-        old_state = (await self.get_monitor_conf())["state"]
+        old_state = await self.get_state()
         new_state = await self.refresh()
         await self.compare(old_state, new_state)
-        await self.set_monitor_conf("state", new_state)
+        await self.set_state(new_state)
 
     # To be implemented in implems
 
-    def refresh(self):
+    async def refresh(self):
         raise NotImplemented
 
-    def compare(self, old_state, new_state):
+    async def compare(self, old_state, new_state):
         raise NotImplemented
 
     @classmethod

@@ -65,3 +65,18 @@ class MonitorModel:
                     {"$set": {"monitor_conf": value}},
                 }
             )
+
+    async def state(self, value=None):
+        collection = Database.get_collection("monitors")
+        self.document = await collection.find_one(
+            {"monitor_conf.name": self.document["monitor_conf"]["name"]}
+        )
+        if value is None:
+            return self.document["state"]
+        else:
+            self.document = await collection.update_one(
+                {
+                    {"monitor_conf.name": self.document["monitor_conf"]["name"]},
+                    {"$set": {"state": value}},
+                }
+            )

@@ -13,4 +13,5 @@ def new_scheduler():
     )
     return scheduler
 
+
 scheduler = new_scheduler()
