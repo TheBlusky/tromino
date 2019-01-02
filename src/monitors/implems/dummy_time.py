@@ -12,7 +12,7 @@ class DummyTimeMonitor(Monitor):
     async def compare(self, old_state, new_state):
         if old_state is None:
             message = "First compare"
-        elif new_state is None:
+        elif new_state is None:  # pragma: no cover
             message = "No newstate, should not happen !"
         else:
             old_time = datetime.strptime(old_state, "%Y-%m-%d %H:%M:%S.%f")

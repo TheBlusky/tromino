@@ -1,11 +1,13 @@
 import asyncio
 import inspect
 import logging
+import os
 import unittest
 
 from exceptions import MonitorAlreadyExists, NoSuchMonitor, ParameterAlreadyExists
 from models.monitor import MonitorModel
 from models.parameter import ParameterModel
+from monitors import load_monitors
 
 
 def async_test(f):
@@ -27,4 +29,10 @@ class MonitorsTestCase(unittest.TestCase):
 
     @async_test
     async def test_01_init(self):
+        all_monitors = load_monitors()
+        nb_files = len(os.listdir(f"{os.path.dirname(__file__)}/../monitors/implems/"))
+        self.assertEqual(len(all_monitors), nb_files-1)
+
+    @async_test
+    async def test_02_fun_with_dummy(self):
         pass
