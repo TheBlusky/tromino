@@ -31,7 +31,7 @@ class MonitorsTestCase(unittest.TestCase):
     async def test_01_init(self):
         all_monitors = load_monitors()
         nb_files = len(os.listdir(f"{os.path.dirname(__file__)}/../monitors/implems/"))
-        self.assertEqual(len(all_monitors), nb_files-1)
+        self.assertEqual(len(all_monitors), nb_files - 1)
 
     @async_test
     async def test_02_fun_with_dummy(self):
