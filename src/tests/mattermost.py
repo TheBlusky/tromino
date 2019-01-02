@@ -65,6 +65,12 @@ class MattermostTestCase(AioHTTPTestCase):
     @unittest_run_loop
     async def test_03_base_help(self):
         resp = await self.client.request(
+            "POST", "/mattermost/", data={"command": "/not_tromino", "text": f""}
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue((await resp.json())["text"].startswith("[Tromino Error]"))
+
+        resp = await self.client.request(
             "POST", "/mattermost/", data={"command": "/tromino", "text": f""}
         )
         self.assertEqual(resp.status, 200)

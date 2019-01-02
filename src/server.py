@@ -32,7 +32,7 @@ async def get_app():
     return app
 
 
-async def run_server():
+async def run_server():  # pragma: no cover
     runner = AppRunner(await get_app())
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", 8080)
