@@ -321,7 +321,7 @@ class MattermostTestCase(AioHTTPTestCase):
         self.assertEqual(len(notifications), 0)
         try:
             await notify.notify({"text": "Toto"}, notification_type=-12)
-            self.assertTrue(False)
+            self.assertTrue(False)  # pragma: no cover
         except UnknownNotificationType:
             pass
         notifications = Notifications.read_notifications()

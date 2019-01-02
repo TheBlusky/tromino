@@ -36,3 +36,7 @@ class InvalidType(TrominoException):
 
 class TooMuchArgument(TrominoException):
     pass
+
+
+class NoSuchMonitor(TrominoException):
+    pass
