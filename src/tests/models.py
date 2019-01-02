@@ -3,7 +3,7 @@ import inspect
 import logging
 import unittest
 
-from exceptions import MonitorAlreadyExists, NoSuchMonitor
+from exceptions import MonitorAlreadyExists, NoSuchMonitor, ParameterAlreadyExists
 from models.monitor import MonitorModel
 from models.parameter import ParameterModel
 
@@ -90,3 +90,21 @@ class ModelsTestCase(unittest.TestCase):
         except NoSuchMonitor:
             pass
         await monitor2.state()
+
+    @async_test
+    async def test_02_parameters(self):
+        parameter1 = await ParameterModel.create("foo", "bar")
+        try:
+            await ParameterModel.create("foo", "bar")
+            self.assertTrue(False)  # pragma: no cover
+        except ParameterAlreadyExists:
+            pass
+        await ParameterModel.create("toto", "titi")
+        self.assertEqual((await ParameterModel.retrieve("toto")).value, "titi")
+        self.assertIsNone(await ParameterModel.retrieve("do_not_exist"))
+        parameter1_retrieved = await ParameterModel.retrieve("foo")
+        self.assertEqual(parameter1_retrieved.value, "bar")
+        await parameter1.change_value("bar2")
+        parameter1_retrieved = await ParameterModel.retrieve("foo")
+        self.assertEqual(parameter1_retrieved.value, "bar2")
+        self.assertEqual((await ParameterModel.retrieve("toto")).value, "titi")
