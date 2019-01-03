@@ -30,9 +30,9 @@ class Monitor:
     @classmethod
     async def load_all(cls):
         for model in await MonitorModel.get_all():
-            monitor_class = all_monitors[model["monitor_conf"]["type"]]
+            monitor_class = all_monitors[(await model.monitor_conf())["type"]]
             monitor = monitor_class(model)
-            Monitor.monitor_instances[model["monitor_conf"]["name"]] = monitor
+            Monitor.monitor_instances[(await model.monitor_conf())["name"]] = monitor
         return Monitor.monitor_instances
 
     def __init__(self, model):
@@ -43,8 +43,8 @@ class Monitor:
         username = (await self.get_monitor_conf())["name"]
         await notify(data, notification_type=notification_type, username=username)
 
-    def get_custom_conf(self):
-        return self.model.custom_conf()
+    async def get_custom_conf(self):
+        return await self.model.custom_conf()
 
     async def set_custom_conf(self, conf):
         self.validate_custom_conf(conf)
@@ -52,10 +52,6 @@ class Monitor:
 
     async def get_monitor_conf(self):
         return await self.model.monitor_conf()
-
-    async def set_monitor_conf(self, conf):
-        self.validate_monitor_conf(conf)
-        await self.model.monitor_conf(conf)
 
     async def get_state(self):
         return await self.model.state()
@@ -108,10 +104,10 @@ class Monitor:
             new_state = await self.refresh()
             await self.compare(old_state, new_state)
             await self.set_state(new_state)
-        except CancelledError:
+        except CancelledError:  # pragma: no cover
             pass
         except Exception as e:
-            if self.job is not None:
+            if self.job is not None:  # pragma: no cover
                 raise e
             print("Exception on job due to killing it")
 
@@ -130,12 +126,12 @@ class Monitor:
 
     # To be implemented in implems
 
-    async def refresh(self):
+    async def refresh(self):  # pragma: no cover
         raise NotImplemented
 
-    async def compare(self, old_state, new_state):
+    async def compare(self, old_state, new_state):  # pragma: no cover
         raise NotImplemented
 
     @classmethod
-    def validate_custom_conf(cls, conf):
+    def validate_custom_conf(cls, conf):  # pragma: no cover
         raise NotImplemented
