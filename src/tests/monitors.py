@@ -4,6 +4,14 @@ import logging
 import os
 import unittest
 
+from exceptions import (
+    InvalidInterval,
+    InvalidName,
+    InvalidType,
+    TooMuchArgument,
+    JobAlreadyStarted,
+    JobNotStarted,
+)
 from models.monitor import MonitorModel
 from models.parameter import ParameterModel
 from monitors import load_monitors
@@ -51,6 +59,52 @@ class MonitorsTestCase(unittest.TestCase):
         self.assertEqual((await dummy_1.get_custom_conf())["foo"], "bar")
         await dummy_1.set_custom_conf({"foo": "baz"})
         self.assertEqual((await dummy_1.get_custom_conf())["foo"], "baz")
+        try:
+            await Monitor.create(
+                {"name": "dummy2", "type": "dummytime", "interval": "1"}, {"foo": "bar"}
+            )
+            self.assertTrue(False)  # pragma: no cover
+        except InvalidInterval:
+            pass
+        try:
+            await Monitor.create(
+                {"name": "dummy_2", "type": "dummytime", "interval": 1}, {"foo": "bar"}
+            )
+            self.assertTrue(False)  # pragma: no cover
+        except InvalidName:
+            pass
+        try:
+            await Monitor.create(
+                {"name": "dummy2", "type": "no_type", "interval": 1}, {"foo": "bar"}
+            )
+            self.assertTrue(False)  # pragma: no cover
+        except InvalidType:
+            pass
+        try:
+            await Monitor.create(
+                {
+                    "name": "dummy2",
+                    "type": "dummytime",
+                    "interval": 1,
+                    "dummy": "dummy",
+                },
+                {"foo": "bar"},
+            )
+            self.assertTrue(False)  # pragma: no cover
+        except TooMuchArgument:
+            pass
+        await dummy_1.job_start()
+        try:
+            await dummy_1.job_start()
+            self.assertTrue(False)  # pragma: no cover
+        except JobAlreadyStarted:
+            pass
+        dummy_1.job_stop()
+        try:
+            dummy_1.job_stop()
+            self.assertTrue(False)  # pragma: no cover
+        except JobNotStarted:
+            pass
 
     @new_loop
     @async_test
@@ -58,3 +112,8 @@ class MonitorsTestCase(unittest.TestCase):
         Monitor.monitor_instances = {}
         monitors = await Monitor.load_all()
         self.assertEqual(len(monitors), 1)
+        dummy_1 = monitors["dummy1"]
+        await dummy_1.remove()
+        Monitor.monitor_instances = {}
+        monitors = await Monitor.load_all()
+        self.assertEqual(len(monitors), 0)
