@@ -1,7 +1,5 @@
+import aiohttp
 import json
-
-from aiojobs import aiohttp
-
 from exceptions import InvalidCustomConf
 from mattermost.notify import NOTIFICATION_RAW, NOTIFICATION_ERROR
 from monitors.utils import monitor_register
