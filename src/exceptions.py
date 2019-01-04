@@ -40,3 +40,7 @@ class TooMuchArgument(TrominoException):
 
 class NoSuchMonitor(TrominoException):
     pass
+
+
+class InvalidCustomConf(TrominoException):
+    pass
