@@ -40,8 +40,15 @@ class Monitor:
         self.model = model
 
     async def notify(self, data, notification_type=NOTIFICATION_SUCCESS):
-        username = (await self.get_monitor_conf())["name"]
-        await notify(data, notification_type=notification_type, username=username)
+        monitor_conf = await self.get_monitor_conf()
+        username = monitor_conf["name"]
+        channel = monitor_conf["channel"] if "channel" in monitor_conf else None
+        await notify(
+            data,
+            notification_type=notification_type,
+            username=username,
+            channel=channel,
+        )
 
     async def get_custom_conf(self):
         return await self.model.custom_conf()
@@ -53,11 +60,22 @@ class Monitor:
     async def get_monitor_conf(self):
         return await self.model.monitor_conf()
 
+    async def set_monitor_conf(self, conf):
+        return await self.model.monitor_conf(conf)
+
     async def get_state(self):
         return await self.model.state()
 
     async def set_state(self, state):
         await self.model.state(state)
+
+    async def set_channel(self, channel=None):
+        monitor_conf = await self.get_monitor_conf()
+        if channel:
+            monitor_conf["channel"] = channel
+        elif "channel" in monitor_conf:
+            del monitor_conf["channel"]
+        await self.set_monitor_conf(monitor_conf)
 
     @classmethod
     def validate_monitor_conf(cls, conf):

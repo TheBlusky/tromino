@@ -64,7 +64,9 @@ class MonitorCreateHandler(AbstractHandler):
 
 class MonitorDetailsHandler(AbstractHandler):
     async def handle_help(self):
-        return helpers.info("`/tromino monitor mon-{name} [remove]`")
+        return helpers.info(
+            "`/tromino monitor mon-{name} [remove] [set-channel [channel]]`"
+        )
 
     async def handle_command(self):
         if self.command[0] not in Monitor.monitor_instances:
@@ -75,5 +77,9 @@ class MonitorDetailsHandler(AbstractHandler):
         elif self.command[1] == "remove":
             await monitor.remove()
             return helpers.success(f"Monitor `{self.command[0]}` removed")
+        elif self.command[1] == "set-channel":
+            channel = self.command[2] if len(self.command) > 1 else None
+            await monitor.set_channel(channel)
+            return helpers.success(f"Monitor `{self.command[0]}` changed channel")
         else:
             return helpers.error(f"Unknown command: {self.command[0]}")

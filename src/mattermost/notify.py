@@ -12,7 +12,11 @@ NOTIFICATION_RAW = 3
 
 
 async def notify(
-    data, notification_type=NOTIFICATION_SUCCESS, username=None, overwrite_url=False
+    data,
+    notification_type=NOTIFICATION_SUCCESS,
+    username=None,
+    overwrite_url=False,
+    channel=None,
 ):
     if notification_type == NOTIFICATION_ERROR:
         to_send = helpers.error(data)
@@ -38,6 +42,8 @@ async def notify(
             "Unconfigure webhook, please add a slash command and use `/tromino config setup `WEBHOOK URL`"
         )
         return
+    if channel:
+        to_send = {**to_send, "channel": channel}
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
         async with session.post(url, json=to_send) as resp:
             if resp.status != 200:  # pragma: no cover
