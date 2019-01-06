@@ -124,8 +124,8 @@ class Monitor:
             await self.set_state(new_state)
         except CancelledError:  # pragma: no cover
             pass
-        except Exception as e:
-            if self.job is not None:  # pragma: no cover
+        except Exception as e:  # pragma: no cover
+            if self.job is not None:
                 raise e
             print("Exception on job due to killing it")
 

@@ -270,6 +270,45 @@ class MattermostTestCase(AioHTTPTestCase):
         resp = await self.client.request(
             "POST",
             "/mattermost/",
+            data={
+                "command": "/tromino",
+                "text": f"monitor mon-dummytest set-channel dummychannel",
+            },
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith(
+                "Monitor `dummytest` changed channel"
+            )
+        )
+        Notifications.read_notifications()  # Flush
+        await asyncio.sleep(5)
+        notifications = Notifications.read_notifications()
+        self.assertIn(len(notifications), [4, 5, 6])
+        for notification in notifications:
+            self.assertEqual(notification["channel"], "dummychannel")
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
+            data={"command": "/tromino", "text": f"monitor mon-dummytest set-channel"},
+        )
+        self.assertEqual(resp.status, 200)
+        self.assertTrue(
+            (await resp.json())["text"].startswith(
+                "Monitor `dummytest` changed channel"
+            )
+        )
+        Notifications.read_notifications()  # Flush
+        await asyncio.sleep(5)
+        notifications = Notifications.read_notifications()
+        self.assertIn(len(notifications), [4, 5, 6])
+        for notification in notifications:
+            self.assertNotIn("channel", notification)
+
+        resp = await self.client.request(
+            "POST",
+            "/mattermost/",
             data={"command": "/tromino", "text": f"monitor mon-dummytest remove"},
         )
         self.assertEqual(resp.status, 200)

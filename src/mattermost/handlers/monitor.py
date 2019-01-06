@@ -78,7 +78,7 @@ class MonitorDetailsHandler(AbstractHandler):
             await monitor.remove()
             return helpers.success(f"Monitor `{self.command[0]}` removed")
         elif self.command[1] == "set-channel":
-            channel = self.command[2] if len(self.command) > 1 else None
+            channel = self.command[2] if len(self.command) > 2 else None
             await monitor.set_channel(channel)
             return helpers.success(f"Monitor `{self.command[0]}` changed channel")
         else:
