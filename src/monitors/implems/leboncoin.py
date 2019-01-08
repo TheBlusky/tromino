@@ -79,7 +79,11 @@ class LeboncoinMonitor(Monitor):
                 await self.notify(message, notification_type=NOTIFICATION_RAW)
 
     @classmethod
-    def validate_custom_conf(cls, conf):
+    async def validate_custom_conf(cls, conf):
         for key in conf:
             if not isinstance(conf[key], str):
                 raise InvalidCustomConf
+
+    @classmethod
+    async def test_me(cls):
+        print("Leboncoin tested")

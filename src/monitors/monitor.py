@@ -21,7 +21,7 @@ class Monitor:
     async def create(cls, monitor_conf, custom_conf):
         Monitor.validate_monitor_conf(monitor_conf)
         monitor_class = all_monitors[monitor_conf["type"]]
-        monitor_class.validate_custom_conf(custom_conf)
+        await monitor_class.validate_custom_conf(custom_conf)
         model = await MonitorModel.create(monitor_conf, custom_conf)
         monitor = monitor_class(model)
         Monitor.monitor_instances[monitor_conf["name"]] = monitor
@@ -54,7 +54,7 @@ class Monitor:
         return await self.model.custom_conf()
 
     async def set_custom_conf(self, conf):
-        self.validate_custom_conf(conf)
+        await self.validate_custom_conf(conf)
         await self.model.custom_conf(conf)
 
     async def get_monitor_conf(self):
@@ -151,5 +151,9 @@ class Monitor:
         raise NotImplemented
 
     @classmethod
-    def validate_custom_conf(cls, conf):  # pragma: no cover
+    async def validate_custom_conf(cls, conf):  # pragma: no cover
+        raise NotImplemented
+
+    @classmethod
+    async def test_me(cls):
         raise NotImplemented

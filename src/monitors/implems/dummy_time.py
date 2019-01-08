@@ -21,5 +21,9 @@ class DummyTimeMonitor(Monitor):
         await self.notify(message)
 
     @classmethod
-    def validate_custom_conf(cls, conf):
+    async def validate_custom_conf(cls, conf):
         pass
+
+    @classmethod
+    async def test_me(cls):
+        print("Dummytime tested")
