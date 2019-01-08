@@ -48,7 +48,6 @@ class DummyTimeMonitor(Monitor):
 
         mocked.notifications_flush()
         some_time = await mocked.refresh()
-        print(f"st: {some_time}")
         await mocked.compare(some_time, some_time)
         notifications = mocked.notifications_retrieve()
         test_case.assertEqual(len(notifications), 1)

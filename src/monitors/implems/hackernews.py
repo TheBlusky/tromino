@@ -3,6 +3,8 @@ from mattermost.notify import NOTIFICATION_RAW, NOTIFICATION_ERROR
 from monitors.utils import monitor_register
 from monitors.monitor import Monitor
 from bs4 import BeautifulSoup
+from aioresponses import aioresponses
+from tests.fake_monitor import FakeMonitor
 
 
 @monitor_register(name="hackernews")
@@ -40,8 +42,10 @@ class HackernewsMonitor(Monitor):
         return state
 
     async def compare(self, old_state, new_state):
-        if new_state is None:  # should not happen
+        if new_state is None:
             new_state = []
+        if old_state is None:
+            old_state = []
         for item in new_state[::-1]:
             if item["link"] not in [old_item["link"] for old_item in old_state]:
                 message = {
@@ -59,5 +63,38 @@ class HackernewsMonitor(Monitor):
         pass
 
     @classmethod
-    async def test_me(cls, test_case):
-        print("HackerNews tested")
+    @aioresponses()
+    async def test_me(cls, test_case, mocked):
+        class MockedHackernewsMonitor(FakeMonitor, HackernewsMonitor):
+            pass
+
+        mocked_monitor = MockedHackernewsMonitor({}, {})
+
+        await mocked_monitor.validate_custom_conf({})
+
+        mocked.get("https://news.ycombinator.com/", status=500, body="")
+        await mocked_monitor.refresh()
+
+        with open("./tests/mocked_services/hackernews/old.html") as f:
+            mocked.get("https://news.ycombinator.com/", status=200, body=f.read())
+        old_state = await mocked_monitor.refresh()
+
+        with open("./tests/mocked_services/hackernews/new.html") as f:
+            mocked.get("https://news.ycombinator.com/", status=200, body=f.read())
+        new_state = await mocked_monitor.refresh()
+
+        mocked_monitor.notifications_flush()
+        await mocked_monitor.compare(None, None)
+        test_case.assertEqual(len(mocked_monitor.notifications_retrieve()), 0)
+
+        mocked_monitor.notifications_flush()
+        await mocked_monitor.compare(old_state, None)
+        test_case.assertEqual(len(mocked_monitor.notifications_retrieve()), 0)
+
+        mocked_monitor.notifications_flush()
+        await mocked_monitor.compare(None, new_state)
+        test_case.assertEqual(len(mocked_monitor.notifications_retrieve()), 15)
+
+        mocked_monitor.notifications_flush()
+        await mocked_monitor.compare(old_state, new_state)
+        test_case.assertEqual(len(mocked_monitor.notifications_retrieve()), 1)
