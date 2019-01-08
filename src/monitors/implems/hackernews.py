@@ -59,5 +59,5 @@ class HackernewsMonitor(Monitor):
         pass
 
     @classmethod
-    async def test_me(cls):
+    async def test_me(cls, test_case):
         print("HackerNews tested")

@@ -133,5 +133,5 @@ class KickstarterMonitor(Monitor):
                     raise InvalidCustomConf
 
     @classmethod
-    async def test_me(cls):
+    async def test_me(cls, test_case):
         print("Kickstarter tested")

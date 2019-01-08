@@ -25,5 +25,5 @@ class DummyTimeMonitor(Monitor):
         pass
 
     @classmethod
-    async def test_me(cls):
+    async def test_me(cls, test_case):
         print("Dummytime tested")

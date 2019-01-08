@@ -155,5 +155,5 @@ class Monitor:
         raise NotImplemented
 
     @classmethod
-    async def test_me(cls):
+    async def test_me(cls, test_case):
         raise NotImplemented

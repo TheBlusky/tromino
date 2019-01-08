@@ -4,18 +4,9 @@ import logging
 import os
 import unittest
 
-from exceptions import (
-    InvalidInterval,
-    InvalidName,
-    InvalidType,
-    TooMuchArgument,
-    JobAlreadyStarted,
-    JobNotStarted,
-)
 from models.monitor import MonitorModel
 from models.parameter import ParameterModel
 from monitors import load_monitors
-from monitors.monitor import Monitor
 
 
 def new_loop(f):
@@ -53,4 +44,4 @@ class MonitorsImplemsTestCase(unittest.TestCase):
     async def test_02(self):
         all_monitors = load_monitors()
         for mon_name in all_monitors:
-            await all_monitors[mon_name].test_me()
+            await all_monitors[mon_name].test_me(self)
