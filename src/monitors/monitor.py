@@ -155,5 +155,5 @@ class Monitor:
         raise NotImplemented
 
     @classmethod
-    async def test_me(cls, test_case):
+    async def test_me(cls, test_case):  # pragma: no cover
         raise NotImplemented
