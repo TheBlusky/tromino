@@ -19,12 +19,12 @@ class LeboncoinMonitor(Monitor):
         }
 
         async with aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=1)
+            timeout=aiohttp.ClientTimeout(total=10)
         ) as session:
             async with session.get(url, params=conf, headers=headers) as resp:
                 if resp.status != 200:
                     await self.notify(
-                        "Erreur, impossible de faire une requête leboncoin",
+                        "Error, unable to perform leboncoin request",
                         notification_type=NOTIFICATION_ERROR,
                     )
                     return []
