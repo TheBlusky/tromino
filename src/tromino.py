@@ -1,7 +1,7 @@
 import asyncio
 
 from mattermost.notify import notify
-from monitors import load_monitors
+import monitors.load_monitors
 from monitors.monitor import Monitor
 from scheduler import scheduler
 from server import run_server
@@ -13,7 +13,7 @@ async def main():
     scheduler.start()
     await notify("Tromino: Scheduler up")
 
-    monitor_types = load_monitors()
+    monitor_types = monitors.load_monitors()
     await notify(f"Tromino: Loading plugins - {', '.join([m for m in monitor_types])}")
 
     # job = scheduler.add_job(lambda: print(1), "interval", seconds=5)
