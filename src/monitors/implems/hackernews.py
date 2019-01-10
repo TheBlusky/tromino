@@ -4,7 +4,6 @@ from monitors.utils import monitor_register
 from monitors.monitor import Monitor
 from bs4 import BeautifulSoup
 from aioresponses import aioresponses
-from tests.fake_monitor import FakeMonitor
 
 
 @monitor_register(name="hackernews")
@@ -65,6 +64,8 @@ class HackernewsMonitor(Monitor):
     @classmethod
     @aioresponses()
     async def test_me(cls, test_case, mocked):
+        from tests.fake_monitor import FakeMonitor
+
         class MockedHackernewsMonitor(FakeMonitor, HackernewsMonitor):
             pass
 

@@ -2,7 +2,6 @@ from datetime import datetime
 
 from monitors.utils import monitor_register
 from monitors.monitor import Monitor
-from tests.fake_monitor import FakeMonitor
 
 
 @monitor_register(name="dummytime")
@@ -27,6 +26,8 @@ class DummyTimeMonitor(Monitor):
 
     @classmethod
     async def test_me(cls, test_case):
+        from tests.fake_monitor import FakeMonitor
+
         class MockedDummyTimeMonitor(FakeMonitor, DummyTimeMonitor):
             pass
 
