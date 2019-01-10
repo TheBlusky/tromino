@@ -1,10 +1,10 @@
 import asyncio
 
 from mattermost.notify import notify
-import monitors.load_monitors
 from monitors.monitor import Monitor
 from scheduler import scheduler
 from server import run_server
+import monitors
 
 
 async def main():
