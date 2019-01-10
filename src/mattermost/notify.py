@@ -44,7 +44,7 @@ async def notify(
         return
     if channel:
         to_send = {**to_send, "channel": channel}
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
         async with session.post(url, json=to_send) as resp:
             if resp.status != 200:  # pragma: no cover
                 logging.warning(
