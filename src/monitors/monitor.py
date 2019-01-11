@@ -118,7 +118,7 @@ class Monitor:
         # Todo: log it
         # Todo: try catch
         # Todo: Execution time
-        name = (await self.get_monitor_conf())['name']
+        name = (await self.get_monitor_conf())["name"]
         logging.warning(f"Executing job {name}")
         try:
             old_state = await self.get_state()

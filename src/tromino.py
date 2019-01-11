@@ -1,5 +1,6 @@
 import asyncio
 
+from exceptions import JobAlreadyStarted
 from mattermost.notify import notify
 from monitors.monitor import Monitor
 from scheduler import scheduler
@@ -18,9 +19,14 @@ async def main():
 
     # job = scheduler.add_job(lambda: print(1), "interval", seconds=5)
     monitor_instances = await Monitor.load_all()
-    await notify(
-        f"Tromino: Loading monitor instances - {', '.join([m for m in monitor_instances])}"
-    )
+    await notify(f"Tromino: Loading monitor instances - {len(monitor_instances)}")
+
+    for m in monitor_instances:
+        try:
+            await monitor_instances[m].job_start()
+            await notify(f"Tromino: Starting {m}")
+        except JobAlreadyStarted:
+            pass
 
     await run_server()
     await notify("Tromino: HTTP Server stared")
