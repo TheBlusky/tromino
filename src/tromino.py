@@ -19,7 +19,7 @@ async def main():
     # job = scheduler.add_job(lambda: print(1), "interval", seconds=5)
     monitor_instances = await Monitor.load_all()
     await notify(
-        f"Tromino: Loading monitor instances - {len(monitor_instances)} instances"
+        f"Tromino: Loading monitor instances - {', '.join([m for m in monitor_instances])}"
     )
 
     await run_server()
