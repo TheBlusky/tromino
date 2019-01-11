@@ -118,7 +118,8 @@ class Monitor:
         # Todo: log it
         # Todo: try catch
         # Todo: Execution time
-        logging.warning(f"Executing job {(await model.monitor_conf())['name']}")
+        name = (await self.get_monitor_conf())['name']
+        logging.warning(f"Executing job {name}")
         try:
             old_state = await self.get_state()
             new_state = await self.refresh()
