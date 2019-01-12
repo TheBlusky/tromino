@@ -1,0 +1,8 @@
+stages:
+- build-and-deploy
+
+build-and-deploy:
+  image: debian:latest
+  stage: build-and-deploy
+  script:
+    - echo "yo !"
