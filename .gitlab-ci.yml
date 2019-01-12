@@ -1,8 +1,13 @@
+services:
+  - docker:dind
+
 stages:
-- build-and-deploy
+  - build-and-deploy
 
 build-and-deploy:
-  image: debian:latest
+  image: docker:stable
   stage: build-and-deploy
   script:
-    - echo "yo !"
+    - "docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY"
+    - "docker build -t blusky/tromino ."
+    - "docker push blusky/tromino:latest"
