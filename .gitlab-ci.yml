@@ -10,4 +10,5 @@ build-and-deploy:
   script:
     - "docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY"
     - "docker build -t blusky/tromino ."
+    - "docker tag blusky/tromino $CI_REGISTRY/blusky/tromino:latest"
     - "docker push $CI_REGISTRY/blusky/tromino:latest"
