@@ -52,6 +52,16 @@ class KickstarterMonitor(Monitor):
         return state
 
     async def compare(self, old_state, new_state):
+        if old_state is None:
+            old_state = {
+                "title": "",
+                "updates": 0,
+                "comments": 0,
+                "faqs": 0,
+                "money": 0,
+                "unit": "",
+                "image": "",
+            }
         if new_state is None:  # should not happen
             new_state = {
                 "title": "",
