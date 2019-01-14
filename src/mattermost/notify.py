@@ -44,11 +44,18 @@ async def notify(
         return
     if channel:
         to_send = {**to_send, "channel": channel}
-    async with aiohttp.ClientSession(
-        timeout=aiohttp.ClientTimeout(total=10)
-    ) as session:
-        async with session.post(url, json=to_send) as resp:
-            if resp.status != 200:  # pragma: no cover
-                logging.warning(
-                    f"Notification sent, but response status code is {resp.status}"
-                )
+    tries = 0
+    while tries < 5:
+        try:
+            async with aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as session:
+                async with session.post(url, json=to_send) as resp:
+                    if resp.status != 200:  # pragma: no cover
+                        logging.warning(
+                            f"Notification sent, but response status code is {resp.status}"
+                        )
+                    return
+        except aiohttp.ClientError as e:
+            tries += 1
+    raise e
