@@ -53,7 +53,7 @@ class FnacMonitor(Monitor):
 
     @classmethod
     async def validate_custom_conf(cls, conf):
-        if len(conf) != 2:
+        if len(conf) != 1:
             raise InvalidCustomConf
         if "product" not in conf:
             raise InvalidCustomConf
