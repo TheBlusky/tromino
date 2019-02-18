@@ -14,7 +14,7 @@ from aioresponses import aioresponses
 class FnacMonitor(Monitor):
     async def refresh(self):
         conf = await self.get_custom_conf()
-        url = f"https://fnac.com/a12500548/{conf['product']}/"
+        url = f"https://fnac.com/{conf['product']}/"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -44,12 +44,12 @@ class FnacMonitor(Monitor):
         if new_state is None:
             return
         if old_state is None:
-            await self.notify(f"https://fnac.com/a12500548/{conf['product']}/ est à {new_state}€")
+            await self.notify(f"https://fnac.com/{conf['product']}/ est à {new_state}€")
             return
         if max(old_state - new_state, new_state - old_state) > 1:
-            await self.notify(f"https://fnac.com/a12500548/{conf['product']}/ est à {new_state}€")
+            await self.notify(f"https://fnac.com/{conf['product']}/ est à {new_state}€")
             return
-        await self.notify(f"https://fnac.com/a12500548/{conf['product']}/ est à {new_state}€ (inchangé)")
+        await self.notify(f"https://fnac.com/{conf['product']}/ est à {new_state}€ (inchangé)")
 
     @classmethod
     async def validate_custom_conf(cls, conf):
